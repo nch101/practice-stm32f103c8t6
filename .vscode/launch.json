@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/practice-stm32f103c8t6.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "serverpath": "/usr/local/bin/openocd",
+            "device": "STM32F103C8T6",
+            "boardId": "0x2ba01477",
+            "openOCDPreConfigLaunchCommands": [
+                "set CPUTAPID 0x2ba01477"
+            ],
+            "configFiles": [
+                "interface/stlink.cfg",
+                "board/stm32f103c8_blue_pill.cfg"
+            ],
+            "armToolchainPath": "/home/huynguyen/embedded/toolchains/gcc-arm-none-eabi/bin",
+            "svdFile": "./STM32F103.svd"
+        }
+    ]
+}
