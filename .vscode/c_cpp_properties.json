@@ -17,7 +17,7 @@
                 "USE_HAL_DRIVER",
                 "STM32F103xB"
             ],
-            "compilerPath": "${ARMGCC_DIR}/arm-none-eabi-gcc",
+            "compilerPath": "/home/huynguyen/embedded/toolchains/gcc-arm-none-eabi/bin/arm-none-eabi-gcc",
             "compilerArgs": [
                 "-mcpu=cortex-m3",
                 "-mthumb"
