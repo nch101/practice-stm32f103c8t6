@@ -19,8 +19,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <stdio.h>
-#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -68,7 +66,7 @@ static void MX_USART1_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  init_semihosting;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -100,6 +98,7 @@ int main(void)
   {
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     printf("Hello world from printf \r\n");
+    log_info("test log info");
     HAL_Delay(1000);
     /* USER CODE END WHILE */
 
@@ -202,26 +201,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-#if defined(__GNUC__)
-int _write(int fd, char * ptr, int len)
-{
-  HAL_UART_Transmit(&huart1, (uint8_t *) ptr, len, HAL_MAX_DELAY);
-  return len;
-}
-#elif defined (__ICCARM__)
-#include "LowLevelIOInterface.h"
-size_t __write(int handle, const unsigned char * buffer, size_t size)
-{
-  HAL_UART_Transmit(&huart1, (uint8_t *) buffer, size, HAL_MAX_DELAY);
-  return size;
-}
-#elif defined (__CC_ARM)
-int fputc(int ch, FILE *f)
-{
-    HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
-    return ch;
-}
-#endif
 
 /* USER CODE END 4 */
 

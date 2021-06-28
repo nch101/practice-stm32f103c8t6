@@ -23,6 +23,8 @@ TARGET = practice-stm32f103c8t6
 DEBUG = 1
 # optimization
 OPT = -Og
+# semihosting
+SEMIHOSTING = 1
 
 
 #######################################
@@ -105,6 +107,9 @@ C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F103xB
 
+ifeq ($(SEMIHOSTING), 1)
+C_DEFS += -DDEBUG
+endif
 
 # AS includes
 AS_INCLUDES = 
@@ -139,9 +144,17 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32F103C8Tx_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
+LIBS = -lc -lm 
 LIBDIR = 
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+
+ifeq ($(SEMIHOSTING), 1)
+LIBS += -lrdimon
+LDFLAGS += -specs=rdimon.specs
+else
+LIBS += -lnosys
+endif
+
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin

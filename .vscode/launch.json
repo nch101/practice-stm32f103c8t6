@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Cortex Debug",
+            "name": "Semihosting",
             "cwd": "${workspaceRoot}",
             "executable": "./build/practice-stm32f103c8t6.elf",
             "request": "launch",
@@ -16,6 +16,9 @@
             "boardId": "0x2ba01477",
             "openOCDPreConfigLaunchCommands": [
                 "set CPUTAPID 0x2ba01477"
+            ],
+            "postLaunchCommands": [
+                "monitor arm semihosting enable"
             ],
             "configFiles": [
                 "interface/stlink.cfg",
