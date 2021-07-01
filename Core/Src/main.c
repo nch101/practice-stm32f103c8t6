@@ -66,7 +66,7 @@ static void MX_USART1_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  init_semihosting;
+  init_semihosting();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -97,8 +97,13 @@ int main(void)
   while (1)
   {
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    printf("Hello world from printf \r\n");
-    log_info("test log info");
+
+    log_fatal("Hello from log\r\n");
+    log_error("Hello from log\r\n");
+    log_warn("Hello from log\r\n");
+    log_info("Hello from log\r\n");
+    log_debug("Hello from log\r\n");
+    
     HAL_Delay(1000);
     /* USER CODE END WHILE */
 

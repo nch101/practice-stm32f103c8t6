@@ -19,12 +19,8 @@ TARGET = practice-stm32f103c8t6
 ######################################
 # building variables
 ######################################
-# debug build?
-DEBUG = 1
 # optimization
 OPT = -Og
-# semihosting
-SEMIHOSTING = 1
 
 
 #######################################
@@ -33,6 +29,7 @@ SEMIHOSTING = 1
 # Build path
 BUILD_DIR = build
 
+
 ######################################
 # source
 ######################################
@@ -40,6 +37,7 @@ BUILD_DIR = build
 C_SOURCES =  \
 Core/Src/main.c \
 Core/Src/stm32f1xx_it.c \
+Core/Src/system_stm32f1xx.c \
 Core/Src/stm32f1xx_hal_msp.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c \
@@ -54,8 +52,7 @@ Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c \
-Core/Src/system_stm32f1xx.c \
-Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c 
 
 # ASM sources
 ASM_SOURCES =  \
@@ -82,7 +79,8 @@ SZ = $(PREFIX)size
 endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
- 
+
+
 #######################################
 # CFLAGS
 #######################################
@@ -93,7 +91,6 @@ CPU = -mcpu=cortex-m3
 # NONE for Cortex-M0/M0+/M3
 
 # float-abi
-
 
 # mcu
 MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
@@ -107,8 +104,25 @@ C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F103xB
 
-ifeq ($(SEMIHOSTING), 1)
+# Debug level
+ifeq ($(DEBUG), 1)
 C_DEFS += -DDEBUG
+endif
+
+ifeq ($(DEBUG), 2)
+C_DEFS += -DINFO
+endif
+
+ifeq ($(DEBUG), 3)
+C_DEFS += -DWARN
+endif
+
+ifeq ($(DEBUG), 4)
+C_DEFS += -DERROR
+endif
+
+ifeq ($(DEBUG), 5)
+C_DEFS += -DFATAL
 endif
 
 # AS includes
@@ -122,16 +136,14 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
 -IDrivers/CMSIS/Include
 
-
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
-ifeq ($(DEBUG), 1)
+ifdef DEBUG
 CFLAGS += -g -gdwarf-2
 endif
-
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
@@ -143,18 +155,17 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # link script
 LDSCRIPT = STM32F103C8Tx_FLASH.ld
 
-# libraries
-LIBS = -lc -lm 
+LIBS = -lc -lm
 LIBDIR = 
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
-ifeq ($(SEMIHOSTING), 1)
+# libraries
+ifdef DEBUG
 LIBS += -lrdimon
 LDFLAGS += -specs=rdimon.specs
 else
 LIBS += -lnosys
 endif
-
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
@@ -195,10 +206,12 @@ $(BUILD_DIR):
 clean:
 	-rm -fR $(BUILD_DIR)
 
+
 #######################################
 # rebuild
 #######################################
 rebuild: clean all
+
 
 #######################################
 # flash firmware
@@ -213,6 +226,7 @@ flash:
 				-c "flash write_image erase $(BUILD_DIR)/$(TARGET).hex" \
 				-c "verify_image $(BUILD_DIR)/$(TARGET).hex" \
 				-c "reset run" -c shutdown
+
 
 #######################################
 # dependencies
